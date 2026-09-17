@@ -5,16 +5,11 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from app.models import User
 from app.config import settings
+from app.repositories.user_repository import get_user_by_username
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
-
-
-fake_user = {
-    "username": "anurag",
-    "password": "$2b$12$8y5B8iZWKLmkLGXBXWwe0Osrjzr6BOd.wTkOEvpSc7s9O.xnH3HMi"
-}
 
 
 def authenticate_user(
@@ -22,7 +17,7 @@ def authenticate_user(
     username: str,
     password: str):
 
-    user = db.query(User).filter(User.username == username).first()
+    user = get_user_by_username(db,username)
 
     if user is None:
         return None

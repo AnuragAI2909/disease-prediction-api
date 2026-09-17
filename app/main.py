@@ -1,7 +1,9 @@
 from fastapi import FastAPI, Depends
 from app.dependencies import get_app_name
 from app.dependencies import verify_api_key, get_app_name , get_current_user
+from fastapi import Request
 
+from app.exceptions import general_exception_handler
 
 from app.routes.auth import router as auth_router
 
@@ -15,8 +17,14 @@ from app.routes.users import router as users_router
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Disease Prediction API"
-)
+    title="Disease Prediction API",
+    description="""
+    Machine Learning API for disease-risk prediction.
+
+    The API accepts patient features and returns
+    a model prediction and estimated class probability.
+    """,
+    version="1.0.0")
 
 from app.routes.prediction import (
     router as prediction_router
@@ -27,6 +35,10 @@ from app.routes.prediction import (
 #     title="ML Prediction API",
 #     version="1.0.0"
 # )
+app.add_exception_handler(
+    Exception,
+    general_exception_handler
+)
 
 
 @app.get("/")
