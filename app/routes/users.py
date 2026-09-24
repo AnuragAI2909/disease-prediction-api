@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-
+from app.dependencies import verify_api_key
+from fastapi import APIRouter, HTTPException, Depends
 from app.database import get_db
+from app.models import User
 from app.schemas import (
     RegisterRequest,
     UserResponse,
@@ -105,3 +107,30 @@ def delete_user(
         db,
         user_id
     )
+
+@router.patch("/setup-admin/{username}")
+def setup_admin(
+    username: str,
+    db: Session = Depends(get_db),
+    current_admin=Depends(get_current_admin) 
+):
+    user = db.query(User).filter(
+        User.username == username
+    ).first()
+
+    if user is None:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    user.role = "admin"
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "message": "User promoted to admin",
+        "username": user.username,
+        "role": user.role
+    }

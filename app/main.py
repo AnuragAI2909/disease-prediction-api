@@ -60,6 +60,11 @@ def app_info(app_name=Depends(get_app_name), user=Depends(get_current_user)):   
         "user": user
     }
 
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy"
+    }
 
 app.include_router(auth_router)
 app.include_router(prediction_router)

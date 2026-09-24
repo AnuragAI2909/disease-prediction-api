@@ -9,3 +9,4 @@ pydantic-settings
 joblib
 scikit-learn
 pytest
+psycopg[binary]
